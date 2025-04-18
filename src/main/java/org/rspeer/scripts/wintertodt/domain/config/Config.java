@@ -1,95 +1,90 @@
-package org.rspeer.scripts.wintertodt.domain.config;
+package main.java.org.rspeer.scripts.f2ppker.domain.config;
 
 import com.google.inject.Singleton;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.component.Inventories;
+import org.rspeer.game.adapter.component.inventory.Equipment;
+import org.rspeer.game.component.Item;
 import org.rspeer.game.script.meta.ScriptConfig;
-import org.rspeer.scripts.wintertodt.api.Items;
-import org.rspeer.scripts.wintertodt.data.*;
+import main.java.org.rspeer.scripts.f2ppker.data.Constant;
 
+/**
+ * Manages configuration for the F2P PKer script.
+ * Handles user-configurable settings from the UI.
+ */
 @Singleton
 public class Config {
+  // UI Configurable options
+  private boolean useSpecialAttack;
+  private int minHealthToEat = 31;
+  private int maxCombatLevel = 97;
+  private int minCombatLevel = 67;
 
-  private boolean fletch;
-  private boolean openCrates;
-
-  private Gang gang;
-  private GameWorld world;
-
-  private int foodId;
-  private int foodAmount;
-  private int minimumFoodAmount;
-
-  private boolean complete;
+  // Flag to indicate if configuration is complete
+  private boolean complete = false;
 
   /**
-   * Initialize with default values
-   */
-  public Config() {
-    //initialize(ConfigBuilder.ofDefaults());
-  }
-
-  /**
-   * ScriptConfigEvent calls this if used
+   * Initialize configuration from ScriptConfigEvent
    */
   public void initialize(ScriptConfig config) {
-    fletch = config.getBoolean(ConfigKey.FLETCH);
-    openCrates = config.getBoolean(ConfigKey.OPEN_CRATES);
-    gang = config.get(ConfigKey.GANG);
-    world = config.get(ConfigKey.WORLD);
-    foodId = config.getInteger(ConfigKey.FOOD_ID);
-    foodAmount = config.getInteger(ConfigKey.FOOD_AMOUNT);
-    minimumFoodAmount = config.getInteger(ConfigKey.MIN_FOOD_AMOUNT);
+    useSpecialAttack = config.getBoolean(ConfigKey.USE_SPECIAL_ATTACK);
+    minHealthToEat = config.getInteger(ConfigKey.MIN_HEALTH_TO_EAT);
+    maxCombatLevel = config.getInteger(ConfigKey.MAX_COMBAT_LEVEL);
+    minCombatLevel = config.getInteger(ConfigKey.MIN_COMBAT_LEVEL);
+
+    Log.info("Config: F2P PKer initialized with: Health=" + minHealthToEat +
+            ", Combat Range=" + minCombatLevel + "-" + maxCombatLevel +
+            ", Special=" + useSpecialAttack);
 
     complete = true;
   }
 
   /**
-   * Initialize with a provided builder. Currently only used for the default values,
-   * but in the future I will use it for quickstart args
+   * Initialize with a provided builder
    */
   public void initialize(ConfigBuilder builder) {
     initialize(builder.build());
   }
 
-  public boolean isFletch() {
-    return fletch;
+  /**
+   * Checks if the player has all required equipment for PKing
+   */
+  public boolean hasRequiredEquipment() {
+    // Check for bow
+    Equipment equipment = Inventories.equipment();
+    Item mainHand = equipment.getItemAt(Equipment.Slot.MAINHAND);
+    boolean hasBow = mainHand != null && mainHand.getName().equals(Constant.MAPLE_SHORTBOW);
+
+    // Check for essential items in inventory
+    boolean has2H = Inventories.backpack().contains(Constant.RUNE_2H);
+    boolean hasFood = Inventories.backpack().contains(Constant.SWORDFISH);
+
+    return hasBow && has2H && hasFood;
   }
 
-  public boolean isOpenCrates() {
-    return openCrates;
+  /**
+   * Checks if the player has adequate food for PKing
+   */
+  public boolean hasAdequateFood() {
+    return Inventories.backpack().getCount(item ->
+            item.getName().equals(Constant.SWORDFISH)) >= Constant.MIN_FOOD_COUNT;
   }
 
-  public Gang getGang() {
-    return gang;
+  // Getters
+  public boolean isUseSpecialAttack() {
+    return useSpecialAttack;
   }
 
-  public GameWorld getWorld() {
-    return world;
+  public int getMinHealthToEat() {
+    return minHealthToEat;
   }
 
-  public int getFoodId() {
-    return foodId;
+  public int getMaxCombatLevel() {
+    return maxCombatLevel;
   }
 
-  public int getFoodAmount() {
-    return foodAmount;
-  }
-
-  public int getMinimumFoodAmount() {
-    return minimumFoodAmount;
-  }
-
-  public boolean isReady() {
-    for (WintertodtItem item : WintertodtItem.values()) {
-      if (!item.isPresent(this)) {
-        Log.info("Missing " + item);
-        return false;
-      }
-    }
-
-    return !Inventories.backpack().contains(iq -> iq.nameContains(" crate").results())
-        && Inventories.backpack().getCount(Items.FOOD) >= getMinimumFoodAmount();
+  public int getMinCombatLevel() {
+    return minCombatLevel;
   }
 
   public boolean isComplete() {

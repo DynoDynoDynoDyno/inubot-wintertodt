@@ -1,17 +1,16 @@
-package org.rspeer.scripts.wintertodt.data;
+package main.java.org.rspeer.scripts.f2ppker.data;
 
-import org.rspeer.scripts.wintertodt.domain.Domain;
+import main.java.org.rspeer.scripts.f2ppker.domain.Domain;
 
 /**
- * Enum containing possible wintertodt actions and their durations in ticks
+ * Enum containing possible PKing actions and their durations in ticks.
+ * Defines animations and cooldowns for combat actions.
  */
 public enum Action {
-
-  REPAIR(3676, 3),
-  FLETCH(1248, 4),
-  CHOP(2846, 4),
-  BURN(832, 4),
-  LIGHT(733, 4);
+  BOW_ATTACK(Constant.BOW_ATTACK_ANIMATION, Constant.BOW_SPEED),
+  RUNE_2H_ATTACK(Constant.RUNE_2H_ATTACK_ANIMATION, Constant.RUNE_2H_SPEED),
+  EAT_FOOD(Constant.EAT_ANIMATION, Constant.EAT_SPEED),
+  DRINK_POTION(Constant.DRINK_ANIMATION, Constant.POTION_SPEED);
 
   private final int animation;
   private final int duration;
@@ -25,11 +24,15 @@ public enum Action {
     return animation;
   }
 
-  public int getDuration() {
+  public int getTickDuration() {
     return duration;
   }
 
+  /**
+   * Checks if the action is currently active
+   */
   public boolean isActive(Domain domain) {
-    return domain.getState().getLastAnimation() == animation && !domain.getTimers().isIdle(duration);
+    return domain.getState().getLastAnimation() == animation &&
+            !domain.getTimers().isIdle(duration);
   }
 }

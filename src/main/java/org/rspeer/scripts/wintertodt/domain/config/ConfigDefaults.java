@@ -1,31 +1,25 @@
-package org.rspeer.scripts.wintertodt.domain.config;
-
-import org.rspeer.scripts.wintertodt.data.GameWorld;
-import org.rspeer.scripts.wintertodt.data.Gang;
+package main.java.org.rspeer.scripts.f2ppker.domain.config;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Default values for configuration options.
+ * Used when configuration is not explicitly provided.
+ */
 public interface ConfigDefaults {
+  boolean USE_SPECIAL_ATTACK = true;
+  int MIN_HEALTH_TO_EAT = 31;
+  int MAX_COMBAT_LEVEL = 97;
+  int MIN_COMBAT_LEVEL = 67;
 
-  boolean FLETCH = false;
-
-  boolean OPEN_CRATES = true;
-
-  Gang GANG = Gang.WEST;
-
-  GameWorld WORLD = GameWorld.UK;
-
-  int FOOD_ID = 385;
-
-  int FOOD_AMOUNT = 5;
-
-  int MIN_FOOD_AMOUNT = 3;
-
+  /**
+   * Helper method to get all default values
+   */
   static List<Object> values() {
     List<Object> values = new ArrayList<>();
-    for (Field field : ConfigKey.class.getDeclaredFields()) {
+    for (Field field : ConfigDefaults.class.getDeclaredFields()) {
       try {
         values.add(field.get(null));
       } catch (IllegalAccessException e) {
