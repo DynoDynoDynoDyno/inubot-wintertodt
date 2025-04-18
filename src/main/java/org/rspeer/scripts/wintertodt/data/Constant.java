@@ -1,4 +1,4 @@
-package main.java.org.rspeer.scripts.f2ppker.data;
+package org.rspeer.scripts.f2ppker.data;
 
 import org.rspeer.game.position.AbsolutePosition;
 import org.rspeer.game.position.Position;

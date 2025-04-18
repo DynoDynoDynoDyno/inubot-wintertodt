@@ -1,6 +1,6 @@
-package main.java.org.rspeer.scripts.f2ppker.data;
+package org.rspeer.scripts.f2ppker.data;
 
-import main.java.org.rspeer.scripts.f2ppker.domain.Domain;
+import org.rspeer.scripts.f2ppker.domain.Domain;
 
 /**
  * Enum containing possible PKing actions and their durations in ticks.
